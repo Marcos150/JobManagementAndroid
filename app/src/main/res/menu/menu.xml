@@ -2,10 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/opSortAlphabetically"
+        android:id="@+id/opSortPriority"
         android:icon="@android:drawable/ic_menu_sort_alphabetically"
         android:title="@string/txt_menu_priority"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/opSortFinished"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="@string/txt_menu_finished"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/opPriority1"
         android:icon="@android:drawable/ic_menu_sort_by_size"
