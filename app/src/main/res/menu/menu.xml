@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/opSortPriority"
+        android:icon="@android:drawable/ic_menu_sort_alphabetically"
+        android:title="@string/txt_menu_priority"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/opSortFinished"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="@string/txt_menu_finished"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/opPriority1"
+        android:title="@string/txt_menu_priority1" />
+    <item
+        android:id="@+id/opPriority2"
+        android:title="@string/txt_menu_priority2" />
+    <item
+        android:id="@+id/opPriority3"
+        android:title="@string/txt_menu_priority3" />
+    <item
+        android:id="@+id/opPriority4"
+        android:title="@string/txt_menu_priority4" />
+    <item
+        android:id="@+id/opPriorityAll"
+        android:title="@string/txt_menu_priorityAll" />
+</menu>

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">JobManagementAndroid</string>
+    <string name="txt_no_jobs">No hay tareas pendientes</string>
+    <string name="txt_priority">Prioridad</string>
+    <string name="txt_menu_priority">Ordenar por prioridad</string>
+    <string name="txt_menu_finished">Mostrar finalizados</string>
+    <string name="txt_menu_priority1">Prioridad 1</string>
+    <string name="txt_menu_priority2">Prioridad 2</string>
+    <string name="txt_menu_priority3">Prioridad 3</string>
+    <string name="txt_menu_priority4">Prioridad 4</string>
+    <string name="txt_menu_priorityAll">Todas</string>
 </resources>
