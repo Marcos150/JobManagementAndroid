@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">JobManagementAndroid</string>
+    <string name="txt_no_jobs">No hay tareas pendientes</string>
 </resources>
