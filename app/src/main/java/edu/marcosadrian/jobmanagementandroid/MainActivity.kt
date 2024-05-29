@@ -8,7 +8,10 @@ import edu.marcosadrian.jobmanagementandroid.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
     private val adapter by lazy {
-        JobsAdapter()
+        JobsAdapter(onClick = {job ->
+            //En isFinished se tendria que poner si el trabajo se ha acabado, para mostrar la opt de acabarlo
+            jobDetailDialog("Job detail", job.toString(), false, layoutInflater, this)
+        })
     }
 
     private var ordered = false

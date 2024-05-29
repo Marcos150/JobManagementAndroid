@@ -9,12 +9,16 @@ import androidx.recyclerview.widget.RecyclerView
 import edu.marcosadrian.jobmanagementandroid.databinding.ItemJobBinding
 
 //Adapter temporal para hacer pruebas
-class JobsAdapter() : ListAdapter<Int, JobsAdapter.JobsViewHolder>(NotesDiffCallback()) {
+class JobsAdapter(val onClick: (Int) -> Unit) : ListAdapter<Int, JobsAdapter.JobsViewHolder>(NotesDiffCallback()) {
     inner class JobsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding = ItemJobBinding.bind(view)
 
-        fun bind(note: Int) {
-            binding.jobDescription.text = note.toString()
+        fun bind(job: Int) {
+            binding.jobDescription.text = job.toString()
+
+            itemView.setOnClickListener{
+                onClick(job)
+            }
 
             binding.jobPriorityColor.setBackgroundColor(binding.root.context.resources.getColor(
                 R.color.yellow,
