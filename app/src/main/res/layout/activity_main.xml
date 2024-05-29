@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/md_theme_background"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -14,13 +15,13 @@
             android:id="@+id/mToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/md_theme_primary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:layout_scrollEffect="compress"
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:title="@string/app_name"
-            app:titleTextColor="@color/design_default_color_on_primary"
-            android:background="@color/md_theme_primary"/>
+            app:titleTextColor="@color/design_default_color_on_primary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
