@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         lifecycleScope.launch {
             val ds=WorkerRemoteDS()
-            Log.i("Prueba",ds.getJobs().get(0).toString())
         }
     }
 }
