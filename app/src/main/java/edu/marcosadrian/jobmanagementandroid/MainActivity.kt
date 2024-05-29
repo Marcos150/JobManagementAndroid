@@ -1,8 +1,8 @@
 package edu.marcosadrian.jobmanagementandroid
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import edu.marcosadrian.jobmanagementandroid.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -16,8 +16,10 @@ class MainActivity : AppCompatActivity() {
 
     private var ordered = false
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Handle the splash screen transition.
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
