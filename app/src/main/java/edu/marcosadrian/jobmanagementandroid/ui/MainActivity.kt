@@ -33,12 +33,14 @@ class MainActivity : AppCompatActivity() {
 Categoría: ${job.categoria}
 Prioridad: ${job.prioridad}
 Fecha de inicio: ${job.fecIni}
-Fecha de fin: ${job.fecFin}""", false, layoutInflater, this
+Fecha de fin: ${job.fecFin ?: "Sin finalizar"}
+${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFin != null, layoutInflater, this
             )
         })
     }
 
     private var ordered = false
+    private var finished = false
     override fun onCreate(savedInstanceState: Bundle?) {
         // Handle the splash screen transition.
         installSplashScreen()
@@ -90,13 +92,15 @@ Fecha de fin: ${job.fecFin}""", false, layoutInflater, this
                 }
 
                 R.id.opPriority4 -> {
-                   createList(4)
+                    createList(4)
 
                     true
                 }
 
-                R.id.opPriorityAll -> {
-                    createList()
+                R.id.opSortFinished -> {
+                    if (!finished) createFinishedList()
+                    else createList()
+                    finished = !finished
 
                     true
                 }
@@ -106,7 +110,10 @@ Fecha de fin: ${job.fecFin}""", false, layoutInflater, this
         }
 
         binding.swipeRefresh.setOnRefreshListener {
-            if (checkConnection(this)) createList()
+            if (checkConnection(this)) {
+                if (finished) createFinishedList()
+                else createList()
+            }
             else {
                 Toast.makeText(this, getString(R.string.txt_noConnection), Toast.LENGTH_SHORT)
                     .show()
@@ -134,6 +141,23 @@ Fecha de fin: ${job.fecFin}""", false, layoutInflater, this
                     adapter.notifyItemRangeChanged(0, previousListSize)
                     binding.swipeRefresh.isRefreshing = false
                 }
+
+        }
+    }
+
+    private fun createFinishedList() {
+        lifecycleScope.launch {
+            val previousListSize = list.size
+            vm.getFinishedJobsByWorker("2", "password1234").collect {
+                list.clear()
+                list.addAll(it)
+                list.forEach {a ->
+                    println(a)
+                }
+                adapter.submitList(list)
+                adapter.notifyItemRangeChanged(0, previousListSize)
+                binding.swipeRefresh.isRefreshing = false
+            }
 
         }
     }

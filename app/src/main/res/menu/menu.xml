@@ -23,7 +23,4 @@
     <item
         android:id="@+id/opPriority4"
         android:title="@string/txt_menu_priority4" />
-    <item
-        android:id="@+id/opPriorityAll"
-        android:title="@string/txt_menu_priorityAll" />
 </menu>

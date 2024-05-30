@@ -1,7 +1,10 @@
 package edu.marcosadrian.jobmanagementandroid
 
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,8 +20,10 @@ class JobsAdapter(val onClick: (Job) -> Unit) : ListAdapter<Job, JobsAdapter.Job
         fun bind(job: Job) {
             binding.jobDescription.text = job.descripcion
             binding.jobCategory.text = job.categoria
+            if (job.fecFin != null) binding.jobDoneCheck.visibility = VISIBLE
+            else binding.jobDoneCheck.visibility = INVISIBLE
 
-            itemView.setOnClickListener{
+                itemView.setOnClickListener{
                 onClick(job)
             }
 

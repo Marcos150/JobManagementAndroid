@@ -35,7 +35,7 @@ class WorkerRepository(db: WorkerDB, val ds: WorkerRemoteDS) {
                 if (resultDB.containsAll(resultAPI)) {
                     emit(resultDB)
                 } else {
-                    localDataSource.insertJob(resultAPI)
+                    localDataSource.insertJob(resultAPI.filter { it.fecFin != null }) //Agrega solo los finalizados
                 }
                 resultDB = localDataSource.getFinishedJobsPrio(prio)
             } catch (e: Exception) {
