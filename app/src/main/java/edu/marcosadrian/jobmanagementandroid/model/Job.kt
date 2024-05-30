@@ -21,5 +21,5 @@ data class Job(
     @SerializedName("tiempo")
     val tiempo: Double,
     @SerializedName("idTrabajador")
-    var idTrabajador: Worker
+    var idTrabajador: Worker?
 )

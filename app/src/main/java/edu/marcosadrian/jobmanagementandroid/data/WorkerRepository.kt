@@ -13,12 +13,12 @@ class WorkerRepository(db: WorkerDB, val ds: WorkerRemoteDS) {
             try {
                 resultDB = localDataSource.getFinishedJobs()
                 val resultAPI = ds.getFinishedJobs(id,pass)
-                if (resultDB.containsAll(resultAPI)) {
-                    emit(resultDB)
+                if (resultDB.isNotEmpty() && resultDB.containsAll(resultAPI)) {
+                    emit(resultDB.filter { it.fecFin != null })
                 } else {
                     localDataSource.insertJob(resultAPI)
                 }
-                resultDB = localDataSource.getFinishedJobs()
+                resultDB = localDataSource.getFinishedJobs().filter { it.fecFin != null }
             } catch (e: Exception) {
                 Log.e("DEBUG", "fetchFJobs: ${e.message}")
             } finally {
@@ -32,10 +32,10 @@ class WorkerRepository(db: WorkerDB, val ds: WorkerRemoteDS) {
             try {
                 resultDB = localDataSource.getFinishedJobsPrio(prio)
                 val resultAPI = ds.getFinishedJobsByPrio(id,prio,pass)
-                if (resultDB.containsAll(resultAPI)) {
+                if (resultDB.isNotEmpty() && resultDB.containsAll(resultAPI)) {
                     emit(resultDB)
                 } else {
-                    localDataSource.insertJob(resultAPI.filter { it.fecFin != null }) //Agrega solo los finalizados
+                    localDataSource.insertJob(resultAPI)
                 }
                 resultDB = localDataSource.getFinishedJobsPrio(prio)
             } catch (e: Exception) {
