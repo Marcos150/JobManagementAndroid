@@ -8,6 +8,7 @@
     <string name="txt_menu_priority2">Prioridad 2</string>
     <string name="txt_menu_priority3">Prioridad 3</string>
     <string name="txt_menu_priority4">Prioridad 4</string>
+    <string name="txt_menu_logout">Logout</string>
     <string name="txt_menu_priorityAll">Todas</string>
     <string name="txt_noConnection">No hay conexión a internet</string>
     <string name="txt_horas_empleadas">Horas empleadas</string>

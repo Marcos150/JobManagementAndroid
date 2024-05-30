@@ -114,6 +114,17 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                     true
                 }
 
+                R.id.opLogout -> {
+                    val prvListSize = list.size
+                    list.clear()
+                    adapter.submitList(emptyList())
+                    adapter.notifyItemRangeRemoved(0, prvListSize)
+                    initialized = false
+                    loginDialog()
+
+                    true
+                }
+
                 else -> false
             }
         }
