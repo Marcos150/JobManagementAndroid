@@ -4,9 +4,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import edu.marcosadrian.jobmanagementandroid.databinding.DialogLayoutBinding
+import edu.marcosadrian.jobmanagementandroid.model.Job
 
 //Lista temporal para hacer pruebas hasta que esten los modelos
-val list = ArrayList<Int>()
+val list = ArrayList<Job>()
 
 fun jobDetailDialog(title: CharSequence, message: CharSequence, isFinished: Boolean, layoutInflater: LayoutInflater, context: Context) {
     val bindingCustom = DialogLayoutBinding.inflate(layoutInflater)
