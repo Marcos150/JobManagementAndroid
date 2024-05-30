@@ -67,7 +67,16 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
         setContentView(binding.root)
         binding.mToolbar.inflateMenu(R.menu.menu)
         binding.recyclerView.adapter = adapter
-        loginDialog()
+
+        println(WorkerApplication.preferences.idTrabajador)
+        println(WorkerApplication.preferences.password)
+        if (WorkerApplication.preferences.idTrabajador == "") loginDialog()
+        else {
+            idUsuario = WorkerApplication.preferences.idTrabajador
+            password = WorkerApplication.preferences.password
+            initialized = true
+            createList()
+        }
     }
 
     override fun onStart() {
@@ -125,6 +134,7 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                     adapter.submitList(emptyList())
                     adapter.notifyItemRangeRemoved(0, prvListSize)
                     initialized = false
+                    WorkerApplication.preferences.deletePrefs()
                     loginDialog()
 
                     true
@@ -171,6 +181,9 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                     bindingCustom.txtInputLayoutPassword.error = ""
                     idUsuario = bindingCustom.editTextUserId.text.toString()
                     password = bindingCustom.editTextPassword.text.toString()
+
+                    WorkerApplication.preferences.idTrabajador = idUsuario!!
+                    WorkerApplication.preferences.password = password!!
 
                     createList()
                 }
