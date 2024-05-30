@@ -52,6 +52,7 @@ class WorkerRepository(db: WorkerDB, val ds: WorkerRemoteDS) {
                 result=ds.getUnfinishedJobs(id,pass)
             }catch (e:Exception){
                 Log.e("DEBUG", "fetchUJobs: ${e.message}")
+                throw e //Para poder saber si aha fallado en el login
             }finally {
                 emit(result)
             }

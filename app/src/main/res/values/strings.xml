@@ -10,4 +10,8 @@
     <string name="txt_menu_priority4">Prioridad 4</string>
     <string name="txt_menu_priorityAll">Todas</string>
     <string name="txt_noConnection">No hay conexión a internet</string>
+    <string name="txt_horas_empleadas">Horas empleadas</string>
+    <string name="txt_pass">Contraseña</string>
+    <string name="txt_user_id">Id de usuario</string>
+    <string name="warning_username">El campo no puede estar vacío</string>
 </resources>

@@ -13,7 +13,8 @@ import edu.marcosadrian.jobmanagementandroid.databinding.ItemJobBinding
 import edu.marcosadrian.jobmanagementandroid.model.Job
 
 //Adapter temporal para hacer pruebas
-class JobsAdapter(val onClick: (Job) -> Unit) : ListAdapter<Job, JobsAdapter.JobsViewHolder>(NotesDiffCallback()) {
+class JobsAdapter(val onClick: (Job) -> Unit) :
+    ListAdapter<Job, JobsAdapter.JobsViewHolder>(NotesDiffCallback()) {
     inner class JobsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding = ItemJobBinding.bind(view)
 
@@ -23,20 +24,22 @@ class JobsAdapter(val onClick: (Job) -> Unit) : ListAdapter<Job, JobsAdapter.Job
             if (job.fecFin != null) binding.jobDoneCheck.visibility = VISIBLE
             else binding.jobDoneCheck.visibility = INVISIBLE
 
-                itemView.setOnClickListener{
+            itemView.setOnClickListener {
                 onClick(job)
             }
 
             // Color de prioridad
             binding.jobPriorityColor.setBackgroundColor(
-                binding.root.context.resources.getColor(when (job.prioridad) {
-                    1 -> R.color.red
-                    2 -> R.color.orange
-                    3 -> R.color.yellow
-                    4 -> R.color.green
-                    else -> R.color.white
-                }, binding.root.context.theme
-                ))
+                binding.root.context.resources.getColor(
+                    when (job.prioridad) {
+                        1 -> R.color.red
+                        2 -> R.color.orange
+                        3 -> R.color.yellow
+                        4 -> R.color.green
+                        else -> R.color.white
+                    }, binding.root.context.theme
+                )
+            )
         }
 
     }
@@ -56,7 +59,7 @@ class JobsAdapter(val onClick: (Job) -> Unit) : ListAdapter<Job, JobsAdapter.Job
     }
 }
 
-class NotesDiffCallback: DiffUtil.ItemCallback<Job>() {
+class NotesDiffCallback : DiffUtil.ItemCallback<Job>() {
     override fun areContentsTheSame(oldItem: Job, newItem: Job): Boolean {
         return oldItem == newItem
     }

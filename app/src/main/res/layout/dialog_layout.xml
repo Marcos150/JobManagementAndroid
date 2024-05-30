@@ -6,11 +6,11 @@
     android:layout_height="wrap_content">
 
     <EditText
-        android:id="@+id/editTextNumber"
+        android:id="@+id/editTextPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Horas empleadas"
+        android:hint="@string/txt_horas_empleadas"
         android:inputType="number|numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"

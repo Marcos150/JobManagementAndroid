@@ -3,9 +3,11 @@ package edu.marcosadrian.jobmanagementandroid.ui
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import edu.marcosadrian.jobmanagementandroid.WorkerApplication
 import edu.marcosadrian.jobmanagementandroid.data.WorkerRemoteDS
 import edu.marcosadrian.jobmanagementandroid.data.WorkerRepository
@@ -13,8 +15,10 @@ import edu.marcosadrian.jobmanagementandroid.databinding.ActivityMainBinding
 import edu.marcosadrian.jobmanagementandroid.JobsAdapter
 import edu.marcosadrian.jobmanagementandroid.R
 import edu.marcosadrian.jobmanagementandroid.checkConnection
+import edu.marcosadrian.jobmanagementandroid.databinding.LoginDialogLayoutBinding
 import edu.marcosadrian.jobmanagementandroid.jobDetailDialog
 import edu.marcosadrian.jobmanagementandroid.list
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -34,13 +38,21 @@ Categoría: ${job.categoria}
 Prioridad: ${job.prioridad}
 Fecha de inicio: ${job.fecIni}
 Fecha de fin: ${job.fecFin ?: "Sin finalizar"}
-${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFin != null, layoutInflater, this
+${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
+                job.fecFin != null,
+                layoutInflater,
+                this
             )
         })
     }
 
     private var ordered = false
     private var finished = false
+    private var idUsuario: String? = null
+    private var password: String? = null
+    private var initialized = false
+
+    private lateinit var dialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         // Handle the splash screen transition.
         installSplashScreen()
@@ -48,12 +60,9 @@ ${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFi
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         binding.mToolbar.inflateMenu(R.menu.menu)
         binding.recyclerView.adapter = adapter
-        createList()
-        //list.add(Job("Informática", "1", "Arreglar los peceses", "rewf", "ref", 3, 4.3))
-        //list.add(Job("Jardinería", "2", "Cortar el cesped", "rewf", "ref", 2, 4.3))
+        loginDialog()
     }
 
     override fun onStart() {
@@ -113,8 +122,7 @@ ${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFi
             if (checkConnection(this)) {
                 if (finished) createFinishedList()
                 else createList()
-            }
-            else {
+            } else {
                 Toast.makeText(this, getString(R.string.txt_noConnection), Toast.LENGTH_SHORT)
                     .show()
                 binding.swipeRefresh.isRefreshing = false
@@ -122,11 +130,45 @@ ${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFi
         }
     }
 
+    private fun loginDialog() {
+        val bindingCustom = LoginDialogLayoutBinding.inflate(layoutInflater)
+
+        dialog = MaterialAlertDialogBuilder(this).apply {
+            setTitle("Introduce tus credenciales")
+
+            setPositiveButton("Enviar") { _, _ -> }
+            setOnDismissListener {
+                if (!initialized) loginDialog()
+            }
+            setView(bindingCustom.root)
+        }.create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (bindingCustom.editTextUserId.text.isNullOrBlank())
+                    bindingCustom.txtInputLayoutIdUser.error = getString(R.string.warning_username)
+                if (bindingCustom.editTextPassword.text.isNullOrBlank())
+                    bindingCustom.txtInputLayoutPassword.error =
+                        getString(R.string.warning_username)
+                else {
+                    bindingCustom.txtInputLayoutIdUser.error = ""
+                    bindingCustom.txtInputLayoutPassword.error = ""
+                    idUsuario = bindingCustom.editTextUserId.text.toString()
+                    password = bindingCustom.editTextPassword.text.toString()
+
+                    createList()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
     private fun createList(prio: Int = -1) {
         lifecycleScope.launch {
             val previousListSize = list.size
             if (prio in 1..4)
-                vm.getFinishedJobsByWorkerPrio("2", "password1234", prio).collect {
+                vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, prio).collect {
                     list.clear()
                     list.addAll(it)
                     adapter.submitList(list)
@@ -134,12 +176,33 @@ ${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFi
                     binding.swipeRefresh.isRefreshing = false
                 }
             else
-                vm.getUnfinishedJobsByWorker("2", "password1234").collect {
+                vm.getUnfinishedJobsByWorker(idUsuario!!, password!!).catch {
+                    if (it.message?.contains("HTTP 401") == true) {
+                        initialized = false
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Las credenciales no son correctas",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Error al mostrar la lista",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }.collect {
                     list.clear()
                     list.addAll(it)
                     adapter.submitList(list)
                     adapter.notifyItemRangeChanged(0, previousListSize)
                     binding.swipeRefresh.isRefreshing = false
+
+                    if (!initialized) {
+                        initialized = true
+                        dialog.dismiss()
+                    }
                 }
 
         }
@@ -148,12 +211,9 @@ ${if (job.fecFin != null)"Tiempo empleado: " + job.tiempo else ""}""", job.fecFi
     private fun createFinishedList() {
         lifecycleScope.launch {
             val previousListSize = list.size
-            vm.getFinishedJobsByWorker("2", "password1234").collect {
+            vm.getFinishedJobsByWorker(idUsuario!!, password!!).collect {
                 list.clear()
                 list.addAll(it)
-                list.forEach {a ->
-                    println(a)
-                }
                 adapter.submitList(list)
                 adapter.notifyItemRangeChanged(0, previousListSize)
                 binding.swipeRefresh.isRefreshing = false
