@@ -22,13 +22,13 @@ class WorkerAPI {
 interface WorkerAPIInterface{
     @Headers("password")
     @GET("trabajador/login")
-    fun getUnfinishedJobsByWorker(@Query("idTrabajador")id:String,@Header("password")password:String):Flow<List<Job>>
+    suspend fun getUnfinishedJobsByWorker(@Query("idTrabajador")id:String,@Header("password")password:String):List<Job>
     @Headers("password")
     @GET("trabajador/trabajos-finalizados")
-    fun getJobsFinishedByWorker(@Query("idTrabajador")id:String,@Header("password")password:String): Flow<List<Job>>
+    suspend fun getJobsFinishedByWorker(@Query("idTrabajador")id:String,@Header("password")password:String): List<Job>
     @Headers("password")
     @GET("trabajo/workerprio")
-    fun getJobsByWorkerPrio(@Query("id")id:String,@Query("prio")prio:String,@Header("password")password:String):Flow<List<Job>>
+    suspend fun getJobsByWorkerPrio(@Query("id")id:String,@Query("prio")prio:Int,@Header("password")password:String):List<Job>
     @GET("trabajo/{id}")
     suspend fun getJobById(@Path("id")id:String):Job
 }

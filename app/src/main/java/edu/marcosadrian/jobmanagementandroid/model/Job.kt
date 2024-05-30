@@ -1,8 +1,10 @@
 package edu.marcosadrian.jobmanagementandroid.model
 
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
+@Entity(primaryKeys = ["codTrabajo"])
 data class Job(
     @SerializedName("categoria")
     val categoria: String,

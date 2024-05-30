@@ -1,11 +1,21 @@
 package edu.marcosadrian.jobmanagementandroid
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import edu.marcosadrian.jobmanagementandroid.data.WorkerRemoteDS
+import edu.marcosadrian.jobmanagementandroid.data.WorkerRepository
 import edu.marcosadrian.jobmanagementandroid.databinding.ActivityMainBinding
+import edu.marcosadrian.jobmanagementandroid.ui.MainActivityViewModel
+import edu.marcosadrian.jobmanagementandroid.ui.MainViewModelFactory
 
 class MainActivity : AppCompatActivity() {
+    private val vm: MainActivityViewModel by viewModels {
+        val db = (application as WorkerApplication).workerDB
+        val ds = WorkerRemoteDS()
+        MainViewModelFactory(WorkerRepository(db, ds))
+    }
     private lateinit var binding:ActivityMainBinding
     private val adapter by lazy {
         JobsAdapter(onClick = {job ->
