@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         list.add(1)
         list.add(4)
         list.add(3)
+        list
         adapter.submitList(list)
     }
 

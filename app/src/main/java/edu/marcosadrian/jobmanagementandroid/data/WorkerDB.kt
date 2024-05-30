@@ -16,7 +16,7 @@ abstract class WorkerDB:RoomDatabase() {
 @Dao
 interface WorkerDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertJob(job: List<Job>):Long
+    suspend fun insertJob(job: List<Job>)
     @Query("SELECT * FROM Job")
     suspend fun getFinishedJobs(): List<Job>
     @Query("SELECT * FROM Job WHERE prioridad=:prio ORDER BY prioridad DESC")
