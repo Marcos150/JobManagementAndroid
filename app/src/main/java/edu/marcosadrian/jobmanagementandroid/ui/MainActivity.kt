@@ -18,6 +18,7 @@ import edu.marcosadrian.jobmanagementandroid.checkConnection
 import edu.marcosadrian.jobmanagementandroid.databinding.LoginDialogLayoutBinding
 import edu.marcosadrian.jobmanagementandroid.jobDetailDialog
 import edu.marcosadrian.jobmanagementandroid.list
+import edu.marcosadrian.jobmanagementandroid.model.Job
 import edu.marcosadrian.jobmanagementandroid.model.Worker
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         MainViewModelFactory(WorkerRepository(db, ds))
     }
     private lateinit var binding: ActivityMainBinding
-    private val adapter by lazy {
+    val adapter by lazy {
         JobsAdapter(onClick = { job ->
             //En isFinished se tendria que poner si el trabajo se ha acabado, para mostrar la opt de acabarlo
             jobDetailDialog(
@@ -46,7 +47,8 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                 finishJob = {
                     job.idTrabajador = Worker(idTrabajador = idUsuario!!)
                     vm.finishJob(job.codTrabajo, job, it)
-                }
+                },
+                this
             )
         })
     }
@@ -193,7 +195,7 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
         dialog.show()
     }
 
-    private fun createList(prio: Int = -1) {
+    fun createList(prio: Int = -1) {
         lifecycleScope.launch {
             val previousListSize = list.size
             if (prio in 1..4)
@@ -213,8 +215,7 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                             "Las credenciales no son correctas",
                             Toast.LENGTH_SHORT
                         ).show()
-                    }
-                    else {
+                    } else {
                         Toast.makeText(
                             this@MainActivity,
                             "Error al mostrar la lista",
