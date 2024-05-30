@@ -1,5 +1,7 @@
 package edu.marcosadrian.jobmanagementandroid.data
 
+import edu.marcosadrian.jobmanagementandroid.model.Job
+
 class WorkerRemoteDS {
     private val api=WorkerAPI.getRetrofit2Api()
 
@@ -9,4 +11,9 @@ class WorkerRemoteDS {
     suspend fun getFinishedJobsByPrio(id:String,prio:Int,password:String)=api.getJobsByWorkerPrio(id,prio,password)
 
     suspend fun getJobById(id:String)=api.getJobById(id)
+
+    suspend fun endJob(id:String,job:Job,time:Double){
+        api.endJobById(id)
+        api.updateJob(id,job.copy(tiempo = time))
+    }
 }

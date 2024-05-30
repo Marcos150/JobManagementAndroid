@@ -3,10 +3,13 @@ package edu.marcosadrian.jobmanagementandroid.data
 import edu.marcosadrian.jobmanagementandroid.model.Job
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -31,4 +34,9 @@ interface WorkerAPIInterface{
     suspend fun getJobsByWorkerPrio(@Query("id")id:String,@Query("prio")prio:Int,@Header("password")password:String):List<Job>
     @GET("trabajo/{id}")
     suspend fun getJobById(@Path("id")id:String):Job
+    @PATCH("trabajo/finalizar/{id}")
+    suspend fun endJobById(@Path("id")id:String)
+    @PUT("trabajo/{id}")
+    suspend fun updateJob(@Path("id")id:String,@Body job:Job)
+
 }
