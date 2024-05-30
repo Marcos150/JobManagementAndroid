@@ -11,7 +11,6 @@ import edu.marcosadrian.jobmanagementandroid.databinding.DialogLayoutBinding
 import edu.marcosadrian.jobmanagementandroid.model.Job
 import edu.marcosadrian.jobmanagementandroid.ui.MainActivity
 
-//Lista temporal para hacer pruebas hasta que esten los modelos
 val list = ArrayList<Job>()
 
 fun jobDetailDialog(title: CharSequence, message: CharSequence, isFinished: Boolean, layoutInflater: LayoutInflater, context: Context, finishJob: (time: Double) -> Unit, mainActivity: MainActivity) {
@@ -36,7 +35,7 @@ fun jobDetailDialog(title: CharSequence, message: CharSequence, isFinished: Bool
             val horas: Double =  bindingCustom.editTextHoras.text.toString().toDouble()
             finishJob(horas)
             dialog.dismiss()
-            mainActivity.createList()
+            mainActivity.initJobs()
         }
     }
 

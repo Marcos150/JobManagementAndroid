@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         MainViewModelFactory(WorkerRepository(db, ds))
     }
     private lateinit var binding: ActivityMainBinding
-    val adapter by lazy {
+    private val adapter by lazy {
         JobsAdapter(onClick = { job ->
             //En isFinished se tendria que poner si el trabajo se ha acabado, para mostrar la opt de acabarlo
             jobDetailDialog(
@@ -60,6 +60,17 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
     private var initialized = false
 
     private lateinit var dialog: AlertDialog
+
+    private val listPriority = ArrayList<Job>()
+    private val listFinished = ArrayList<Job>()
+    private val listUnfinished = ArrayList<Job>()
+
+    private var prioJob: kotlinx.coroutines.Job? = null
+    private var finishedJob: kotlinx.coroutines.Job? = null
+    private var unfinishedJob: kotlinx.coroutines.Job? = null
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Handle the splash screen transition.
         installSplashScreen()
@@ -77,7 +88,24 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
             idUsuario = WorkerApplication.preferences.idTrabajador
             password = WorkerApplication.preferences.password
             initialized = true
-            createList()
+            unfinishedJob = lifecycleScope.launch {
+                vm.getUnfinishedJobsByWorker(idUsuario!!, password!!).collect {
+                    listUnfinished.addAll(it)
+                    adapter.submitList(listUnfinished)
+                }
+            }
+
+            finishedJob = lifecycleScope.launch {
+                vm.getFinishedJobsByWorker(idUsuario!!, password!!).collect {
+                    listFinished.addAll(it)
+                }
+            }
+
+            prioJob = lifecycleScope.launch {
+                vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, 1).collect {
+                    listPriority.addAll(it)
+                }
+            }
         }
     }
 
@@ -87,44 +115,82 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
         binding.mToolbar.setOnMenuItemClickListener { option ->
             when (option.itemId) {
                 R.id.opSortPriority -> {
-                    if (!ordered) adapter.submitList(adapter.currentList.sortedBy { it.prioridad })
-                    else adapter.submitList(list.filter {
-                        adapter.currentList.contains(it)
-                    })
+                    if (finished) {
+                        if (!ordered) adapter.submitList(listFinished.sortedBy { it.prioridad })
+                        else adapter.submitList(listFinished)
+                        adapter.notifyItemRangeChanged(0, listFinished.size)
+                    }
+
+                    else {
+                        if (!ordered) adapter.submitList(listUnfinished.sortedBy { it.prioridad })
+                        else adapter.submitList(listUnfinished)
+                        adapter.notifyItemRangeChanged(0, listUnfinished.size)
+                    }
+
                     ordered = !ordered
+
                     true
                 }
 
                 R.id.opPriority1 -> {
-                    /*adapter.submitList(list.filter {
-                        it.prioridad == 1
-                    })*/
-                    createList(1)
+                    prioJob!!.cancel()
+                    prioJob = lifecycleScope.launch {
+                        vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, 1).collect {
+                            listPriority.clear()
+                            listPriority.addAll(it)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                    adapter.submitList(listPriority)
 
                     true
                 }
 
                 R.id.opPriority2 -> {
-                    createList(2)
+                    prioJob!!.cancel()
+                    prioJob = lifecycleScope.launch {
+                        vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, 2).collect {
+                            listPriority.clear()
+                            listPriority.addAll(it)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                    adapter.submitList(listPriority)
 
                     true
                 }
 
                 R.id.opPriority3 -> {
-                    createList(3)
+                    prioJob!!.cancel()
+                    prioJob = lifecycleScope.launch {
+                        vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, 3).collect {
+                            listPriority.clear()
+                            listPriority.addAll(it)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                    adapter.submitList(listPriority)
 
                     true
                 }
 
                 R.id.opPriority4 -> {
-                    createList(4)
+                    prioJob!!.cancel()
+                    prioJob = lifecycleScope.launch {
+                        vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, 4).collect {
+                            listPriority.clear()
+                            listPriority.addAll(it)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                    adapter.submitList(listPriority)
 
                     true
                 }
 
                 R.id.opSortFinished -> {
-                    if (!finished) createFinishedList()
-                    else createList()
+                    if (!finished) adapter.submitList(listFinished) //createFinishedList()
+                    else adapter.submitList(listUnfinished) //createList()
                     finished = !finished
 
                     true
@@ -148,8 +214,12 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
 
         binding.swipeRefresh.setOnRefreshListener {
             if (checkConnection(this)) {
-                if (finished) createFinishedList()
-                else createList()
+                unfinishedJob!!.cancel()
+                finishedJob!!.cancel()
+                prioJob!!.cancel()
+                initJobs()
+                if (finished)  adapter.submitList(listFinished) //createFinishedList()
+                else adapter.submitList(listUnfinished) //createList()
             } else {
                 Toast.makeText(this, getString(R.string.txt_noConnection), Toast.LENGTH_SHORT)
                     .show()
@@ -187,7 +257,11 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                     WorkerApplication.preferences.idTrabajador = idUsuario!!
                     WorkerApplication.preferences.password = password!!
 
-                    createList()
+                    initJobs()
+                    adapter.submitList(listUnfinished)
+                    dialog.dismiss()
+
+                    //createList()
                 }
             }
         }
@@ -195,60 +269,49 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
         dialog.show()
     }
 
-    fun createList(prio: Int = -1) {
-        lifecycleScope.launch {
-            val previousListSize = list.size
-            if (prio in 1..4)
-                vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, prio).collect {
-                    list.clear()
-                    list.addAll(it)
-                    adapter.submitList(list)
-                    adapter.notifyItemRangeChanged(0, previousListSize)
-                    binding.swipeRefresh.isRefreshing = false
+    fun initJobs() {
+        initialized = true
+        unfinishedJob = lifecycleScope.launch {
+            vm.getUnfinishedJobsByWorker(idUsuario!!, password!!).catch {
+                if (it.message?.contains("HTTP 401") == true) {
+                    initialized = false
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Las credenciales no son correctas",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    WorkerApplication.preferences.deletePrefs()
+                    dialog.show()
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Error al mostrar la lista",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            else
-                vm.getUnfinishedJobsByWorker(idUsuario!!, password!!).catch {
-                    if (it.message?.contains("HTTP 401") == true) {
-                        initialized = false
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Las credenciales no son correctas",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Error al mostrar la lista",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }.collect {
-                    list.clear()
-                    list.addAll(it)
-                    adapter.submitList(list)
-                    adapter.notifyItemRangeChanged(0, previousListSize)
-                    binding.swipeRefresh.isRefreshing = false
-
-                    if (!initialized) {
-                        initialized = true
-                        dialog.dismiss()
-                    }
-                }
-
-        }
-    }
-
-    private fun createFinishedList() {
-        lifecycleScope.launch {
-            val previousListSize = list.size
-            vm.getFinishedJobsByWorker(idUsuario!!, password!!).collect {
-                list.clear()
-                list.addAll(it)
-                adapter.submitList(list)
-                adapter.notifyItemRangeChanged(0, previousListSize)
-                binding.swipeRefresh.isRefreshing = false
+            }.collect {
+                listUnfinished.clear()
+                listUnfinished.addAll(it)
+                adapter.notifyDataSetChanged()
             }
-
         }
+
+        finishedJob = lifecycleScope.launch {
+            vm.getFinishedJobsByWorker(idUsuario!!, password!!).collect {
+                listFinished.clear()
+                listFinished.addAll(it)
+                adapter.notifyDataSetChanged()
+            }
+        }
+
+        prioJob = lifecycleScope.launch {
+            vm.getFinishedJobsByWorkerPrio(idUsuario!!, password!!, 2).collect {
+                listPriority.clear()
+                listPriority.addAll(it)
+                adapter.notifyDataSetChanged()
+            }
+        }
+
+        binding.swipeRefresh.isRefreshing = false
     }
 }
