@@ -1,6 +1,7 @@
 package edu.marcosadrian.jobmanagementandroid.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -11,9 +12,9 @@ import edu.marcosadrian.jobmanagementandroid.data.WorkerRepository
 import edu.marcosadrian.jobmanagementandroid.databinding.ActivityMainBinding
 import edu.marcosadrian.jobmanagementandroid.JobsAdapter
 import edu.marcosadrian.jobmanagementandroid.R
+import edu.marcosadrian.jobmanagementandroid.checkConnection
 import edu.marcosadrian.jobmanagementandroid.jobDetailDialog
 import edu.marcosadrian.jobmanagementandroid.list
-import edu.marcosadrian.jobmanagementandroid.model.Job
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -47,15 +48,8 @@ Fecha de fin: ${job.fecFin}""", false, layoutInflater, this
         setContentView(binding.root)
 
         binding.mToolbar.inflateMenu(R.menu.menu)
-
         binding.recyclerView.adapter = adapter
-
-        lifecycleScope.launch {
-            vm.getUnfinishedJobsByWorker("2", "password1234").collect{
-                list.addAll(it)
-                adapter.submitList(list)
-            }
-        }
+        createList()
         //list.add(Job("Informática", "1", "Arreglar los peceses", "rewf", "ref", 3, 4.3))
         //list.add(Job("Jardinería", "2", "Cortar el cesped", "rewf", "ref", 2, 4.3))
     }
@@ -75,45 +69,72 @@ Fecha de fin: ${job.fecFin}""", false, layoutInflater, this
                 }
 
                 R.id.opPriority1 -> {
-                    adapter.submitList(list.filter {
+                    /*adapter.submitList(list.filter {
                         it.prioridad == 1
-                    })
+                    })*/
+                    createList(1)
 
                     true
                 }
 
                 R.id.opPriority2 -> {
-                    adapter.submitList(list.filter {
-                        it.prioridad == 2
-                    })
+                    createList(2)
 
                     true
                 }
 
                 R.id.opPriority3 -> {
-                    adapter.submitList(list.filter {
-                        it.prioridad == 3
-                    })
+                    createList(3)
 
                     true
                 }
 
                 R.id.opPriority4 -> {
-                    adapter.submitList(list.filter {
-                        it.prioridad == 4
-                    })
+                   createList(4)
 
                     true
                 }
 
                 R.id.opPriorityAll -> {
-                    adapter.submitList(list)
+                    createList()
 
                     true
                 }
 
                 else -> false
             }
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            if (checkConnection(this)) createList()
+            else {
+                Toast.makeText(this, getString(R.string.txt_noConnection), Toast.LENGTH_SHORT)
+                    .show()
+                binding.swipeRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    private fun createList(prio: Int = -1) {
+        lifecycleScope.launch {
+            val previousListSize = list.size
+            if (prio in 1..4)
+                vm.getFinishedJobsByWorkerPrio("2", "password1234", prio).collect {
+                    list.clear()
+                    list.addAll(it)
+                    adapter.submitList(list)
+                    adapter.notifyItemRangeChanged(0, previousListSize)
+                    binding.swipeRefresh.isRefreshing = false
+                }
+            else
+                vm.getUnfinishedJobsByWorker("2", "password1234").collect {
+                    list.clear()
+                    list.addAll(it)
+                    adapter.submitList(list)
+                    adapter.notifyItemRangeChanged(0, previousListSize)
+                    binding.swipeRefresh.isRefreshing = false
+                }
+
         }
     }
 }

@@ -13,7 +13,7 @@ data class Job(
     @SerializedName("descripcion")
     val descripcion: String,
     @SerializedName("fecFin")
-    val fecFin: String,
+    val fecFin: String?,
     @SerializedName("fecIni")
     val fecIni: String,
     @SerializedName("prioridad")
