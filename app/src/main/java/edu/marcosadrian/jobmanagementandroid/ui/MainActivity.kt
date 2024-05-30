@@ -46,7 +46,7 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                 this,
                 finishJob = {
                     job.idTrabajador = Worker(idTrabajador = idUsuario!!)
-                    vm.finishJob(job.codTrabajo, job, it)
+                    vm.finishJob(job.codTrabajo, job, it, this)
                 },
                 this
             )

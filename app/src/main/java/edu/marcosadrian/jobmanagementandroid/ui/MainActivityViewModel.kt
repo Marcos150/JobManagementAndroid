@@ -16,9 +16,10 @@ class MainActivityViewModel(val repository: WorkerRepository) : ViewModel() {
         return repository.fetchFinishedJobsPrio(id,pass,prio)
     }
     fun getUnfinishedJobsByWorker(id:String,pass:String)=repository.fetchUnfinishedJobs(id,pass)
-    fun finishJob(id:String,job:Job,time:Double){
+    fun finishJob(id:String,job:Job,time:Double, mainActivity: MainActivity){
         viewModelScope.launch {
             repository.finishJob(id,job,time)
+            mainActivity.initJobs()
         }
     }
 }
