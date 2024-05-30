@@ -8,4 +8,7 @@ class WorkerLocalDS(private val db: WorkerDao) {
     suspend fun insertJob(jobs:List<Job>){
         db.insertJob(jobs)
     }
+    suspend fun deleteJob(job: Job){
+        db.removeJob(job)
+    }
 }

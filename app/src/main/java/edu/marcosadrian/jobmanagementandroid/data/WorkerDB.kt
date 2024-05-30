@@ -2,6 +2,7 @@ package edu.marcosadrian.jobmanagementandroid.data
 
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -25,4 +26,6 @@ interface WorkerDao{
     suspend fun getFinishedJobs(): List<Job>
     @Query("SELECT * FROM Job WHERE prioridad=:prio ORDER BY prioridad DESC")
     suspend fun getFinishedJobsPrio(prio:Int):List<Job>
+    @Delete
+    suspend fun removeJob(job:Job)
 }
