@@ -13,7 +13,7 @@ class WorkerRemoteDS {
     suspend fun getJobById(id:String)=api.getJobById(id)
 
     suspend fun endJob(id:String,job:Job,time:Double){
-        api.endJobById(id)
         api.updateJob(id,job.copy(tiempo = time))
+        api.endJobById(id)
     }
 }

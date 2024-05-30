@@ -18,6 +18,7 @@ import edu.marcosadrian.jobmanagementandroid.checkConnection
 import edu.marcosadrian.jobmanagementandroid.databinding.LoginDialogLayoutBinding
 import edu.marcosadrian.jobmanagementandroid.jobDetailDialog
 import edu.marcosadrian.jobmanagementandroid.list
+import edu.marcosadrian.jobmanagementandroid.model.Worker
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
@@ -41,7 +42,11 @@ Fecha de fin: ${job.fecFin ?: "Sin finalizar"}
 ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                 job.fecFin != null,
                 layoutInflater,
-                this
+                this,
+                finishJob = {
+                    job.idTrabajador = Worker(idTrabajador = idUsuario!!)
+                    vm.finishJob(job.codTrabajo, job, it)
+                }
             )
         })
     }

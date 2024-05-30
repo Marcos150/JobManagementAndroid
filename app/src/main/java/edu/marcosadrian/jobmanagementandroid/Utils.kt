@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.view.LayoutInflater
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.getSystemService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import edu.marcosadrian.jobmanagementandroid.databinding.DialogLayoutBinding
@@ -12,10 +13,10 @@ import edu.marcosadrian.jobmanagementandroid.model.Job
 //Lista temporal para hacer pruebas hasta que esten los modelos
 val list = ArrayList<Job>()
 
-fun jobDetailDialog(title: CharSequence, message: CharSequence, isFinished: Boolean, layoutInflater: LayoutInflater, context: Context) {
+fun jobDetailDialog(title: CharSequence, message: CharSequence, isFinished: Boolean, layoutInflater: LayoutInflater, context: Context, finishJob: (time: Double) -> Unit) {
     val bindingCustom = DialogLayoutBinding.inflate(layoutInflater)
     // Se crea el AlertDialog.
-    MaterialAlertDialogBuilder(context).apply {
+    val dialog = MaterialAlertDialogBuilder(context).apply {
         // Se asigna un título.
         setTitle(title)
 
@@ -23,11 +24,21 @@ fun jobDetailDialog(title: CharSequence, message: CharSequence, isFinished: Bool
         setMessage(message)
 
         if (!isFinished){
-            setPositiveButton("Finalizar trabajo") { _, _ -> } //TODO: Insert finishing code
+            setPositiveButton("Finalizar trabajo") { _, _ -> }
             setView(bindingCustom.root) //Para mostrar layout personalizado con input numerico
         }
         setNegativeButton("Cancelar") { _, _ -> }
-    }.show() // Se muestra el AlertDialog.
+    }.create()
+
+    dialog.setOnShowListener {
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val horas: Double =  bindingCustom.editTextHoras.text.toString().toDouble()
+            finishJob(horas)
+            dialog.dismiss()
+        }
+    }
+
+    dialog.show()
 }
 
 /**

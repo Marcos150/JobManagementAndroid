@@ -19,5 +19,7 @@ data class Job(
     @SerializedName("prioridad")
     val prioridad: Int,
     @SerializedName("tiempo")
-    val tiempo: Double
+    val tiempo: Double,
+    @SerializedName("idTrabajador")
+    var idTrabajador: Worker
 )

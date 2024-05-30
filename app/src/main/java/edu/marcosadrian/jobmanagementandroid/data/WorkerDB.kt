@@ -6,10 +6,14 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import edu.marcosadrian.jobmanagementandroid.model.Job
-import kotlinx.coroutines.flow.Flow
+import edu.marcosadrian.jobmanagementandroid.model.Worker
+import edu.marcosadrian.jobmanagementandroid.model.WorkerConverter
 
-@Database(entities = [Job::class], version = 1)
+
+@TypeConverters(WorkerConverter::class)
+@Database(entities = [Job::class, Worker::class], version = 1)
 abstract class WorkerDB:RoomDatabase() {
     abstract fun workerDao():WorkerDao
 }
