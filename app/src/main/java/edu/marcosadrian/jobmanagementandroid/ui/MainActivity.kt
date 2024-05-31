@@ -203,6 +203,7 @@ ${if (job.fecFin != null) "Tiempo empleado: " + job.tiempo else ""}""",
                     adapter.notifyItemRangeRemoved(0, prvListSize)
                     initialized = false
                     WorkerApplication.preferences.deletePrefs()
+                    vm.removeFinishedJobs()
                     loginDialog()
 
                     true
