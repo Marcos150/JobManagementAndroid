@@ -22,6 +22,12 @@ class MainActivityViewModel(val repository: WorkerRepository) : ViewModel() {
             mainActivity.initJobs()
         }
     }
+
+    fun removeFinishedJobs() {
+        viewModelScope.launch {
+            repository.removeFinishedJobs()
+        }
+    }
 }
 @Suppress("UNCHECKED_CAST")
 class MainViewModelFactory(

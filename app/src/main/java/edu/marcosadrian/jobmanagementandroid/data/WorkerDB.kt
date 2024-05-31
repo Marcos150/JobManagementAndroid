@@ -26,4 +26,6 @@ interface WorkerDao{
     suspend fun getFinishedJobs(): List<Job>
     @Query("SELECT * FROM Job WHERE prioridad=:prio ORDER BY prioridad DESC")
     suspend fun getFinishedJobsPrio(prio:Int):List<Job>
+    @Query("DELETE FROM Job")
+    suspend fun removeFinishedJobs()
 }

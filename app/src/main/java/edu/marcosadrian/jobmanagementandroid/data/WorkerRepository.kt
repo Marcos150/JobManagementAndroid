@@ -61,4 +61,8 @@ class WorkerRepository(db: WorkerDB, val ds: WorkerRemoteDS) {
     suspend fun finishJob(id:String,job: Job,time:Double){
         ds.endJob(id,job,time)
     }
+
+    suspend fun removeFinishedJobs() {
+        localDataSource.removeFinishedJobs()
+    }
 }
